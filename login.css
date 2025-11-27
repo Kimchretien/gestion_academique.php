@@ -1,0 +1,38 @@
+body{
+   background-color: black;
+     height: 100vh;
+     display: flex;
+     justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+}
+
+.formid{ 
+    max-width: 350px; 
+    background: blue;
+    border-radius: 10px;
+    border: 1px solid lightgrey;
+    padding: 5px 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+input{
+    width: 100%;
+    box-sizing: border-box;
+}
+h1{
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+}
+label{
+    text-align: left;
+    display: block;
+    font-size: 24px;
+}
+
+.btnenvoyer{
+    text-align: center;
+}
