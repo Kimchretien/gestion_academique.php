@@ -5,14 +5,17 @@ $id = $_POST['id'];
 $nom = $_POST['nom'];
 $prenom = $_POST['prenom'];
 $email = $_POST['email'];
+ $stmt=$cnx->prepare("UPDATE etudiant SET nom=?, prenom=?, email=? WHERE id=?");
 
-$query = "UPDATE etudiant SET nom='$nom', prenom='$prenom', email='$email' WHERE id=$id";
-
-if (mysqli_query($cnx, $query)) {
-    echo "Modification réussie !";
-    header("Location: afficher_etudiants.php"); 
-    exit();
-} else {
-    echo "Erreur : " . mysqli_error($cnx);
+if($stmt ===false){
+die("Erreur lors de la preparation de la requete" .$cnx->error);
 }
-?>
+
+$stmt->bind_param("sssi",$nom,$prenom,$email,$id);
+
+
+if ($stmt->execute()) {
+    echo "Mise à jour réussie !";
+} else {
+    echo "Erreur : " . $stmt->error;
+}
