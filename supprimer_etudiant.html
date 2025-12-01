@@ -1,0 +1,19 @@
+<?php
+include 'connexion.php';
+
+$id = $_GET['id'];
+
+
+$stmt=$cnx->prepare("DELETE FROM etudiant WHERE id = ?");
+
+if($stmt ===false){
+    die("Erreur lors de la preparation de la requete" .$cnx->error);
+}
+
+$stmt->bind_param("i",$id);
+if($stmt->execute()){
+    echo "Suppression reussie avec succes";
+}else{
+    echo"Erreur lors de la suppression" .$stmt->error;
+}
+ ?>
