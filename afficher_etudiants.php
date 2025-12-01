@@ -4,51 +4,87 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 include 'connexion.php';
-$query="SELECT * FROM etudiant ORDER BY id ASC";
-$result=mysqli_query($cnx,$query);
+
+// Récupérer le mot-clé de recherche depuis le formulaire (s'il existe)
+$search = '';
+if (isset($_GET['search'])) {
+    $search = $_GET['search'];
+}
+
+// Préparer la requête avec LIKE pour filtrer nom ou email
+$stmt = $cnx->prepare("SELECT id, nom, prenom, email FROM etudiant WHERE nom LIKE ? OR email LIKE ? ORDER BY id ASC");
+
+if ($stmt === false) {
+    die("Erreur préparation : " . $cnx->error);
+}
+
+// Ajouter les % pour le LIKE
+$param = "%{$search}%";
+$stmt->bind_param("ss", $param, $param);
+
+// Exécuter la requête
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Liste des Étudiants</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="card shadow-lg">
-    <div class="card-header bg-primary text-white text-center">
-   <h2>Liste des Étudiants</h2>
-</div>
-
-<div class="card-body">
-
-    <table class="table table-bordered table-hover text-center ">
-        <tr>
-            <th>ID</th>
-            <th>Nom</th>
-            <th>Prenom</th>
-            <th>Email</th>
-            <th>Action</th>
-        </tr>
-
-        <?php while($rows=mysqli_fetch_assoc($result)) { ?>
-            <tr>
-                <td><?php echo $rows['id']; ?></td>
-                <td><?php echo $rows['nom']; ?></td>
-                <td><?php echo $rows['prenom']; ?></td>
-                <td><?php echo $rows['email']; ?></td>
-
-                <td>
-                    <a href="modifier_etudiant.php?id=<?php echo $rows['id']; ?>" class="btn btn-warning btn-sm">Modifier</a>
-                    <a href="supprimer_etudiant.php?id=<?php echo $rows['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?');">Supprimer</a>
-                </td>
-            </tr>
-        <?php } ?>
-    </table>
-</div>
-    </div>
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>Liste des Étudiants</h2>
         </div>
+
+        <div class="card-body">
+            <!-- Formulaire de recherche -->
+            <form method="GET" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher par nom ou email" value="<?php echo htmlspecialchars($search); ?>">
+                    <button class="btn btn-primary" type="submit">Rechercher</button>
+                </div>
+            </form>
+
+            <table class="table table-bordered table-hover text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Prenom</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+
+                <?php if($result->num_rows > 0): ?>
+                    <?php while($rows = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($rows['id']); ?></td>
+                            <td><?php echo htmlspecialchars($rows['nom']); ?></td>
+                            <td><?php echo htmlspecialchars($rows['prenom']); ?></td>
+                            <td><?php echo htmlspecialchars($rows['email']); ?></td>
+                            <td>
+                                <a href="modifier_etudiant.php?id=<?php echo $rows['id']; ?>" class="btn btn-warning btn-sm">Modifier</a>
+                                <a href="supprimer_etudiant.php?id=<?php echo $rows['id']; ?>" class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?');">Supprimer</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5">Aucun étudiant trouvé.</td>
+                    </tr>
+                <?php endif; ?>
+            </table>
+        </div>
+    </div>
+</div>
 </body>
 </html>
+
+<?php
+$stmt->close();
+?>
