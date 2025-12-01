@@ -9,13 +9,19 @@ if(isset($_POST['envoyer'])){
     $email=$_POST['email'];
 
 
-    $query="INSERT INTO etudiant(nom,prenom,email) VALUES ('$name','$prenom','$email')";
-    $result=mysqli_query($cnx,$query);
 
-    if($result){
+    $stmt=$cnx->prepare("INSERT INTO etudiant(nom,prenom,email) VALUES (?,?,?)");
+
+    if($stmt===false){
+        die("Erreur préparation : ".$cnx->error);
+    }
+
+    $stmt->bind_param("sss", $name, $prenom, $email);
+
+    if($stmt->execute()){
         echo "Etudiant Enregistrer avec Succes";
     }else{
-       echo "Erreur".mysqli_error($cnx);
+       echo "Erreur".$stmt->error;
     }
 }
 ?>
