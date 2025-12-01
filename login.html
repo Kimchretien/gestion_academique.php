@@ -4,18 +4,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="login.css">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
-    <div class="formid">
+    <div>
         <form method="post" action="login.php">
             <h1>PAGE LOGIN</h1>
-            <label>USERNAME:</label><br>
-            <input type="text" name="username" required><br>
-            <label>PASSWORD:</label><br>
-            <input type="password" name="password" class="btnenvoyer" required><br><br>
-            <input type="submit" name="envoyer" value="envoyer"><br><br>
+            <label class="form-label">USERNAME:</label><br>
+            <input type="text" name="username" required class="form-control"><br>
+            <label class="form-label">PASSWORD:</label><br>
+            <input type="password" name="password" class="form-control" required><br><br>
+            <input type="submit" name="envoyer" value="envoyer" class="btn btn-danger"><br><br>
             <h6>Vous n'avez pas de compte?</h6>
-            <a href="enregistrement_user.html">creer un compte</a>
+            <a href="enregistrement_user.html" class="text-center">creer un compte</a>
         </form>
     </div>
 </body>
