@@ -7,27 +7,26 @@ include 'connexion.php';
 
 // Récupérer le mot-clé de recherche depuis le formulaire (s'il existe)
 $search = '';
-if (isset($_GET['search'])) {
+if (isset($_GET['searchie'])) {
     $search = $_GET['search'];
 }
 
-// Préparer la requête avec LIKE pour filtrer nom ou email
-$stmt = $cnx->prepare("SELECT id, nom, prenom, email FROM etudiant WHERE nom LIKE ? OR email LIKE ? ORDER BY id ASC");
+try {
+    // Préparer la requête avec LIKE pour filtrer nom ou email
+    $stmt = $cnx->prepare("SELECT id, nom, prenom, email FROM etudiant WHERE nom LIKE :search OR email LIKE :search ORDER BY id ASC");
 
-if ($stmt === false) {
-    die("Erreur préparation : " . $cnx->error);
+    // Ajouter les % pour le LIKE et exécuter
+    $stmt->execute([':search' => "%{$search}%"]);
+
+    // Récupérer tous les résultats
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    die("Erreur : " . $e->getMessage());
 }
-
-// Ajouter les % pour le LIKE
-$param = "%{$search}%";
-$stmt->bind_param("ss", $param, $param);
-
-// Exécuter la requête
-$stmt->execute();
-$result = $stmt->get_result();
 ?>
 
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,7 +45,7 @@ $result = $stmt->get_result();
             <form method="GET" class="mb-3">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Rechercher par nom ou email" value="<?php echo htmlspecialchars($search); ?>">
-                    <button class="btn btn-primary" type="submit">Rechercher</button>
+                    <button class="btn btn-primary" type="submit" name="searchie">Rechercher</button>
                 </div>
             </form>
 
@@ -59,8 +58,8 @@ $result = $stmt->get_result();
                     <th>Action</th>
                 </tr>
 
-                <?php if($result->num_rows > 0): ?>
-                    <?php while($rows = $result->fetch_assoc()): ?>
+                <?php if(count($result) > 0): ?>
+                    <?php foreach($result as $rows): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($rows['id']); ?></td>
                             <td><?php echo htmlspecialchars($rows['nom']); ?></td>
@@ -72,7 +71,7 @@ $result = $stmt->get_result();
                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?');">Supprimer</a>
                             </td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
                         <td colspan="5">Aucun étudiant trouvé.</td>
@@ -84,7 +83,3 @@ $result = $stmt->get_result();
 </div>
 </body>
 </html>
-
-<?php
-$stmt->close();
-?>
