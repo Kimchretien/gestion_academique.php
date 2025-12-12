@@ -1,17 +1,27 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page d'acceuil</title>
-    <link rel="stylesheet" href="acceuil.css">
-</head>
-<body>
-   <h1>DASHBOARD</h1> 
-   <div class="cards">
-        <div class="card1"><a href="enregistrer_etudiant.html">Enregistrer un Etudiant</a></div>
-        <div class="card2"><a href="afficher_etudiants.php">Afficher un Etudiant</a></div>
-        <div class="card4"><a href="modifier_etudiant.html">Modifier un Etudiant</a></div>
-        <div class="card3"><a href="supprimer_etudiant.html">Supprimer un Etudiant</a></div>
-   </div>
-</body>
-</html>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Dashboard</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link btn btn-primary text-white mx-1" href="enregistrer_etudiant.html">Enregistrer un Étudiant</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn btn-secondary text-white mx-1" href="afficher_etudiants.php">Afficher un Étudiant</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn btn-success text-white mx-1" href="modifier_etudiant.php">Modifier un Étudiant</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn btn-danger text-white mx-1" href="supprimer_etudiant.php">Supprimer un Étudiant</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
