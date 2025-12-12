@@ -1,10 +1,13 @@
 <?php
 
-$cnx=mysqli_connect("localhost","root","","gestion_etudiant");
+try {
+    $cnx = new PDO("mysql:host=localhost;dbname=gestion_etudiant;charset=utf8", "root", "");
 
-if(!$cnx){
-    die("Erreur:" .mysqli_connect_error());
+    $cnx->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
+} catch (PDOException $e) {
+    
+    die("Erreur de connexion : " . $e->getMessage());
 }
-    // echo "connexion reussi";
 ?>
-
