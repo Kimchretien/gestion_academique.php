@@ -7,35 +7,28 @@ if (isset($_POST['envoyer'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // 1) Préparer la requête (on cherche QUE par username)
-    $stmt = $cnx->prepare("SELECT id, username, password FROM user WHERE username = ?");
-    if (!$stmt) {
-        die("Erreur préparation : " . $cnx->error);
-    }
+    try {
+        // Préparer la requête avec paramètre nommé
+        $stmt = $cnx->prepare("SELECT id, username, password FROM user WHERE username = :username");
+        $stmt->execute([':username' => $username]);
 
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
+        // Récupérer le résultat
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // 2) Récupérer les données
-    $stmt->bind_result($id, $user_db, $hash_mdp);
-
-    if ($stmt->fetch()) {
-        // 3) Comparer les mots de passe
-        if (password_verify($password, $hash_mdp)) {
-
-            // Connexion réussie
-            $_SESSION['user'] = $user_db;
-            header("Location: acceuil.html");
-            exit;
-
+        if ($user) {
+            // Vérifier le mot de passe
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user'] = $user['username'];
+                header("Location: acceuil.html");
+                exit();
+            } else {
+                echo "Mot de passe incorrect ❌";
+            }
         } else {
-            echo "Mot de passe incorrect ❌";
+            echo "Utilisateur introuvable ❌";
         }
-
-    } else {
-        echo "Utilisateur introuvable ❌";
+    } catch (PDOException $e) {
+        echo "Erreur lors de la connexion : " . $e->getMessage();
     }
-
-    $stmt->close();
 }
 ?>
