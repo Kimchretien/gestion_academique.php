@@ -1,21 +1,29 @@
 <?php
 include 'connexion.php';
 
+if (!isset($_POST['id'], $_POST['nom'], $_POST['prenom'], $_POST['email'])) {
+    die("Données manquantes !");
+}
+
 $id = $_POST['id'];
 $nom = $_POST['nom'];
 $prenom = $_POST['prenom'];
 $email = $_POST['email'];
- $stmt=$cnx->prepare("UPDATE etudiant SET nom=?, prenom=?, email=? WHERE id=?");
 
-if($stmt ===false){
-die("Erreur lors de la preparation de la requete" .$cnx->error);
-}
+try {
+    // Préparer la requête UPDATE avec paramètres nommés
+    $stmt = $cnx->prepare("UPDATE etudiant SET nom = :nom, prenom = :prenom, email = :email WHERE id = :id");
 
-$stmt->bind_param("sssi",$nom,$prenom,$email,$id);
+    // Exécuter la requête avec un tableau associatif
+    $stmt->execute([
+        ':nom' => $nom,
+        ':prenom' => $prenom,
+        ':email' => $email,
+        ':id' => $id
+    ]);
 
-
-if ($stmt->execute()) {
     echo "Mise à jour réussie !";
-} else {
-    echo "Erreur : " . $stmt->error;
+} catch (PDOException $e) {
+    echo "Erreur lors de la mise à jour : " . $e->getMessage();
 }
+?>
