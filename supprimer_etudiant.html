@@ -1,19 +1,19 @@
 <?php
 include 'connexion.php';
 
+if (!isset($_GET['id'])) {
+    die("ID non fourni !");
+}
+
 $id = $_GET['id'];
 
+try {
+    // Préparer la requête DELETE avec paramètre nommé
+    $stmt = $cnx->prepare("DELETE FROM etudiant WHERE id = :id");
+    $stmt->execute([':id' => $id]);
 
-$stmt=$cnx->prepare("DELETE FROM etudiant WHERE id = ?");
-
-if($stmt ===false){
-    die("Erreur lors de la preparation de la requete" .$cnx->error);
+    echo "Suppression réussie avec succès";
+} catch (PDOException $e) {
+    echo "Erreur lors de la suppression : " . $e->getMessage();
 }
-
-$stmt->bind_param("i",$id);
-if($stmt->execute()){
-    echo "Suppression reussie avec succes";
-}else{
-    echo"Erreur lors de la suppression" .$stmt->error;
-}
- ?>
+?>
