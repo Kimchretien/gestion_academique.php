@@ -2,32 +2,29 @@
 session_start();
 include 'connexion.php';
 
-if(isset($_POST['envoyer'])){
+if(isset($_POST['envoyer'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // 🔐 1) Hacher le mot de passe AVANT l'insertion
+    // 🔐 Hacher le mot de passe avant l'insertion
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-    // 🔐 2) Préparer la requête
-    $stmt = $cnx->prepare("INSERT INTO user(username, password) VALUES (?, ?)");
-    
-    if ($stmt === false) {
-        die("Erreur préparation : " . $cnx->error);
-    }
+    try {
+        // Préparer la requête avec des paramètres nommés
+        $stmt = $cnx->prepare("INSERT INTO user(username, password) VALUES (:username, :password)");
 
-    // 🔐 3) Lier username + mot de passe haché
-    $stmt->bind_param("ss", $username, $password_hash);
+        // Exécuter la requête avec un tableau associatif
+        $stmt->execute([
+            ':username' => $username,
+            ':password' => $password_hash
+        ]);
 
-    // 🔐 4) Exécuter
-    if($stmt->execute()){
         echo "Utilisateur créé avec succès";
-        // header("Location: login.html");
+        // header("Location: login.php"); // si tu veux rediriger
         exit();
-    } else {
-        echo "Erreur lors de l'enregistrement : " . $stmt->error;
+    } catch (PDOException $e) {
+        // Gestion des erreurs
+        echo "Erreur lors de l'enregistrement : " . $e->getMessage();
     }
-
-    $stmt->close();
 }
 ?>
